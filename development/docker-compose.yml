@@ -1,0 +1,32 @@
+services:
+  log-service:
+    container_name: log-service
+    depends_on:
+      mongo:
+        condition: service_healthy
+    build:
+      context: ./../log-service
+      dockerfile: ./../log-service/log-service.dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  mongo:
+    image: 'mongo:7.0'
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    healthcheck:
+      # 使用 mongosh 對 admin DB 做 ping
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')", "-u", "admin", "-p", "password", "--authenticationDatabase", "admin" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./db-data/mongo/:/data/db
