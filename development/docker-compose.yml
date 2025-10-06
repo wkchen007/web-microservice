@@ -30,3 +30,48 @@ services:
       retries: 10
     volumes:
       - ./db-data/mongo/:/data/db
+
+  nft-service:
+    build:
+      context: ./../nft-service
+      dockerfile: ./../nft-service/nft-service.dockerfile
+    container_name: nft-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./../nft-service/.env
+    environment:
+      - CONFIG_PATH=configs/config.yaml
+      - HTTP_ADDR=:8080
+    healthcheck:
+      test: [ "CMD", "wget", "-qO-", "http://localhost:8080/healthz" ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  postgres:
+    image: 'postgres:14.5'
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nftweb
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
+      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
