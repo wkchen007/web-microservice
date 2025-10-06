@@ -67,6 +67,35 @@ services:
       timeout: 5s
       retries: 5
 
+  listen-service:
+    container_name: listen-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    build:
+      context: ./../listen-service
+      dockerfile: ./../listen-service/listen-service.dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # AMQP
+      - "15672:15672" # 管理介面 http://localhost:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq/
+
   nft-service:
     build:
       context: ./../nft-service
