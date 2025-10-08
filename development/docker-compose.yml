@@ -104,6 +104,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
       - "8080:8080"
     env_file:
@@ -140,3 +142,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: [ "redis-server", "--requirepass", "supersecret" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli -a supersecret ping | grep PONG" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./db-data/redis/:/data
