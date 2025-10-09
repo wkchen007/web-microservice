@@ -16,17 +16,18 @@ Go 語言開發的 Web 服務專案，使用 Docker 部署。
 - Docker Compose 2.0
 
 ## 服務說明
+![架構圖](./docs/diagram.jpg)
 
-### listen service
+### Listen Service
 RabbitMQ 消息監聽服務，接收登入事件通知，發送通知信和寫入 log。
 
-### log service
+### Log Service
 log記錄服務，將登入紀錄存入 MongoDB，方便查詢與追蹤。
 
-### mail service
+### Mail Service
 郵件發送服務，負責寄送系統通知信件，整合 Mailhog 測試郵件。
 
-### nft service
+### NFT Service
 NFT 業務主服務，提供 NFT 鑄造、查詢、交易等 API，整合以太坊智能合約與 Postgres 資料庫。
 
 ## 快速開始
