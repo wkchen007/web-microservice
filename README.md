@@ -69,6 +69,11 @@ make up_build
 make down
 ```
 
+## 相關專案
+
+- 前端專案 [nftweb-front](https://github.com/wkchen007/nftweb-front)
+- NFT Service 後端專案 [nftweb-back](https://github.com/wkchen007/nftweb-back)
+
 ## 授權
 
 MIT License
